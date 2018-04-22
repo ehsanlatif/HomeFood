@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "306926248549",
+    "firebase_url": "https://homefood-631d0.firebaseio.com",
+    "project_id": "homefood-631d0",
+    "storage_bucket": "homefood-631d0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:306926248549:android:4298d42dfa07fc14",
+        "android_client_info": {
+          "package_name": "com.example.ehsan.homefood"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "306926248549-jccjof6t423om6uv81vi2shdj53l3r5k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ehsan.homefood",
+            "certificate_hash": "94ccea95fd67d423614445ff0d41559a8f10cd94"
+          }
+        },
+        {
+          "client_id": "306926248549-40n4s9p9ql6bt5g7evj2u3nmvqljta8l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANF1-LRfJQU1KZhWpsLb95kK_oKQrNOVw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "306926248549-40n4s9p9ql6bt5g7evj2u3nmvqljta8l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

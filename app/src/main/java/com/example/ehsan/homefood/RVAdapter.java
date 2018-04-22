@@ -29,7 +29,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.DishViewHolder>{
         disheViewHolder.Dish_Title.setText(dishes.get(i).getTitle());
         disheViewHolder.Area.setText(dishes.get(i).getArea());
         disheViewHolder.Price.setText(dishes.get(i).getPrice());
-        disheViewHolder.ratingBar.setRating(dishes.get(i).getRating());
+        disheViewHolder.ratingBar.setRating((float)dishes.get(i).getRating());
         disheViewHolder.Dish_Photo.setImageResource(dishes.get(i).getImg());
     }
 
