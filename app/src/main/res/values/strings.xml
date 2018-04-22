@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">HomeFood</string>
+    <string-array name="category">
+        <item>Choose Category</item>
+        <item>Vegetarian</item>
+        <item>Non-Vegetarian</item>
+        <item>Continental</item>
+        <item>Fast Food</item>
+    </string-array>
 </resources>
