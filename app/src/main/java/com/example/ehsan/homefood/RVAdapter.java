@@ -28,7 +28,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.DishViewHolder>{
     public void onBindViewHolder(DishViewHolder disheViewHolder, int i) {
         disheViewHolder.Dish_Title.setText(dishes.get(i).getTitle());
         disheViewHolder.Area.setText(dishes.get(i).getArea());
-        disheViewHolder.Price.setText(dishes.get(i).getPrice());
+        disheViewHolder.Price.setText(dishes.get(i).getPrice()+"PKR");
         disheViewHolder.ratingBar.setRating((float)dishes.get(i).getRating());
         disheViewHolder.Dish_Photo.setImageResource(dishes.get(i).getImg());
     }
