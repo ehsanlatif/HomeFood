@@ -76,6 +76,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.TwitterAuthProvider;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -88,16 +89,14 @@ import org.json.JSONObject;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Login extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, View.OnClickListener {
+public class Login extends AppCompatActivity implements View.OnClickListener {
 
 
     private static final String GOOGLE_TAG = "GoogleActivity";
     private static final int RC_SIGN_IN = 9001;
     // ...
     private static final String TAG = "FacebookLogin";
-    public static double longitude = 74.3031411, latitude = 31.4812031;
-    GoogleApiClient googleApiClient;
-    LocationRequest locationRequest;
+
     LoginButton loginButton;
     SignInButton signInButton;
     CallbackManager callbackManager;
@@ -143,15 +142,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.Connecti
 
             }
         });
-        if (googleApiClient == null) {
-            googleApiClient = new GoogleApiClient.Builder(this)
-                    .addApi(LocationServices.API).addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(Login.this).build();
-            googleApiClient.connect();
-        }
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-        }
+
 
 //        if(Login.isLoggedIn)
 //        {
@@ -175,20 +166,6 @@ public class Login extends AppCompatActivity implements GoogleApiClient.Connecti
     public void onStart() {
         super.onStart();
 
-//        Childreference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                Toast.makeText(getApplicationContext(), dataSnapshot.getValue(String.class), Toast.LENGTH_SHORT).show();
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
-
-        // signOut();
-        // Check if user is signed in (non-null) and update UI accordingly.
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         updateUI(currentUser);
@@ -218,25 +195,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.Connecti
                     }
                 });
     }
-    public void displayUserInfo(JSONObject object){
-        String fields, first_name, last_name, email, id;
-        first_name="";
-        last_name="";
-        email ="";
-        id ="";
-        try {
-            first_name = object.getString("first_name");
-            last_name = object.getString("last_name");
-            email = object.getString("email");
-            id = object.getString("id");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
-        TextView tv_name, tv_email, tv_id ;
-        //tv_name = (TextView)findViewById(R.id.TV)
-
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -263,9 +222,32 @@ public class Login extends AppCompatActivity implements GoogleApiClient.Connecti
     }
 
     private void updateUI(FirebaseUser user) {
-        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            finish();
-            startActivity(new Intent(this, HomeScreen.class));
+        if (user != null) {
+            progressDialog.setCancelable(false);
+            progressDialog.setMessage("Loading Credentails...");
+            progressDialog.show();
+            DatabaseReference root = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid());
+            root.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    String getFullName = dataSnapshot.child("userName").getValue().toString();
+                    String getEmailId = dataSnapshot.child("email").getValue().toString();
+                    String getMobileNumber = dataSnapshot.child("phoneNumber").getValue().toString();
+                    String getLocation = dataSnapshot.child("location").getValue().toString();
+                    Boolean isChef = (Boolean) dataSnapshot.child("isChef").getValue();
+                    User newUser = new User(getEmailId, getFullName, getMobileNumber, getLocation, isChef);
+                    User.setUser(newUser);
+                    Toast.makeText(getApplicationContext(), User.getUser().toMap().toString(), Toast.LENGTH_SHORT).show();
+                    progressDialog.dismiss();
+                    finish();
+                    startActivity(new Intent(Login.this, HomeScreen.class));
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
         }
     }
     private void signIn() {
@@ -285,7 +267,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.Connecti
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(GOOGLE_TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            Toast.makeText(getApplicationContext(),"Succwessfull"+user.getDisplayName().toString(),Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(),"Successfull"+user.getDisplayName().toString(),Toast.LENGTH_SHORT).show();
 
                             updateUI(user);
                         } else {
@@ -311,117 +293,9 @@ public class Login extends AppCompatActivity implements GoogleApiClient.Connecti
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
     }
 
-    public void SignupButtonPressed(View view) {
-        Intent intent = new Intent(this, Login.class);
-        intent.putExtra("intent", "signup");
-        startActivity(intent);
-    }
-    @Override
-    public void onConnected( Bundle bundle) {
-        createLocationRequest();
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                .addLocationRequest(locationRequest);
 
-        // **************************
-        builder.setAlwaysShow(true); // this is the key ingredient
-        // **************************
 
-        PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi
-                .checkLocationSettings(googleApiClient, builder.build());
-        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
-            @Override
-            public void onResult(LocationSettingsResult result) {
-                final Status status = result.getStatus();
 
-                final LocationSettingsStates state = result
-                        .getLocationSettingsStates();
-                switch (status.getStatusCode()) {
-                    case LocationSettingsStatusCodes.SUCCESS: {
-                        //Toast.makeText(getApplicationContext(),status.toString(),Toast.LENGTH_SHORT).show();
-                    }
-                    break;
-                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                        // Location settings are not satisfied. But could be
-                        // fixed by showing the user
-                        // a dialog.
-                        try {
-                            // Show the dialog by calling
-                            // startResolutionForResult(),
-                            // and check the result in onActivityResult().
-                            status.startResolutionForResult(Login.this, 1000);
-                        } catch (IntentSender.SendIntentException e) {
-                            // Ignore the error.
-                        }
-                        break;
-                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                        // Location settings are not satisfied. However, we have
-                        // no way to fix the
-                        // settings so we won't show the dialog.
-                        break;
-                }
-            }
-        });
-
-        displayLocation();
-    }
-
-    public void displayLocation() {
-        @SuppressLint("MissingPermission") Location mLastLocation = LocationServices.FusedLocationApi
-                .getLastLocation(googleApiClient);
-
-        if (mLastLocation != null) {
-//            Toast.makeText(getApplicationContext(), "Location Enabled", Toast.LENGTH_SHORT).show();
-////            latitude = mLastLocation.getLatitude();
-////            longitude = mLastLocation.getLongitude();
-//
-//            Toast.makeText(getApplicationContext(), latitude + ", " + longitude, Toast.LENGTH_SHORT).show();
-
-        }
-    }
-    public static void signOut() {
-        mAuth.signOut();
-        LoginManager.getInstance().logOut();
-
-        //updateUI(null);
-    }
-    protected void createLocationRequest() {
-        locationRequest = LocationRequest.create();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(1000);
-        locationRequest.setFastestInterval(5 * 1000);
-    }
-
-    @SuppressLint("MissingPermission")
-    protected void startLocationUpdates() {
-
-        LocationServices.FusedLocationApi.requestLocationUpdates(
-                googleApiClient, locationRequest, this);
-
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        // Assign the new location
-        longitude = location.getLongitude();
-        latitude = location.getLatitude();
-
-        Toast.makeText(getApplicationContext(), "Location changed!",
-                Toast.LENGTH_SHORT).show();
-
-        // Displaying the new location on UI
-        Toast.makeText(getApplicationContext(), latitude + ", " + longitude, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult arg0) {
-        // TODO Auto-generated method stub
-
-    }
 
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
@@ -449,7 +323,44 @@ public class Login extends AppCompatActivity implements GoogleApiClient.Connecti
         forgetPwd = (TextView) findViewById(R.id.forgetTxt);
         show_hide_password = (CheckBox) findViewById(R.id.show_hide_password);
         loginLayout = (ConstraintLayout) findViewById(R.id.login_layout);
+        mAuth = FirebaseAuth.getInstance();
+        mAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = mAuth.getCurrentUser();
+                if (user != null) {
 
+                    progressDialog.setCancelable(false);
+                    progressDialog.setMessage("Loading Credentails...");
+                    progressDialog.show();
+
+                    DatabaseReference root = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid());
+                    root.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            String getFullName = dataSnapshot.child("userName").getValue().toString();
+                            String getEmailId = dataSnapshot.child("email").getValue().toString();
+                            String getMobileNumber = dataSnapshot.child("phoneNumber").getValue().toString();
+                            String getLocation = dataSnapshot.child("location").getValue().toString();
+                            Boolean isChef = (Boolean) dataSnapshot.child("isChef").getValue();
+                            User newUser = new User(getEmailId, getFullName, getMobileNumber, getLocation, isChef);
+                            User.setUser(newUser);
+                            progressDialog.dismiss();
+                            Toast.makeText(getApplicationContext(), User.getUser().toMap().toString(), Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(Login.this, HomeScreen.class);
+                            startActivity(intent);
+                            finish();
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+
+            }
+        });
         // Load ShakeAnimation
         shakeAnimation = AnimationUtils.loadAnimation(this,
                 R.anim.shake);
@@ -504,6 +415,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.Connecti
 
                     }
                 });
+
     }
 
     @Override
@@ -584,9 +496,9 @@ public class Login extends AppCompatActivity implements GoogleApiClient.Connecti
                                 "Authentication failed");
                     }
                 } else {
-                    Intent intent = new Intent(Login.this, HomeScreen.class);
-                    startActivity(intent);
-                    finish();
+
+                    progressDialog.dismiss();
+                    Toast.makeText(getApplicationContext(),"Login Successfull",Toast.LENGTH_SHORT).show();
                 }
             }
         });

@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -28,6 +29,7 @@ public class HomeScreen extends AppCompatActivity {
         dishList.add(new Dish("Spaggatti","22-B Faisal Town, Lahore",180,R.drawable.index,3));
         dishList.add(new Dish("Karachi Biryani","22-B Faisal Town, Lahore",150,R.drawable.biryani,4));
         dishList.add(new Dish("Spaggatti","22-B Faisal Town, Lahore",150,R.drawable.index,4.5));
+        Toast.makeText(getApplicationContext(),User.getUser().toMap().toString(),Toast.LENGTH_SHORT).show();
         RVAdapter rvAdapter=new RVAdapter(dishList);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(llm);
@@ -48,7 +50,8 @@ public class HomeScreen extends AppCompatActivity {
         {
             case R.id.logout:
             {
-                new Login().signOut();
+                User.setUser(null);
+                new MainActivity().signOut();
                 finish();
                 startActivity(new Intent(this,Login.class));
             }

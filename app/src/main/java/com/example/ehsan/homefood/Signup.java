@@ -18,6 +18,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +37,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -63,6 +66,8 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
     private FirebaseAuth firebaseAuth;
     private DatabaseReference mDatabase;
     private ProgressDialog progressDialog;
+    private RadioGroup radioGroup;
+    private Boolean isChef;
     Animation shakeAnimation;
     // Initialize all views
     private void initViews() {
@@ -76,6 +81,18 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
         signUpButton = (Button) findViewById(R.id.signUpBtn);
         login = (TextView) findViewById(R.id.already_user);
         terms_conditions = (CheckBox) findViewById(R.id.terms_conditions);
+        radioGroup=(RadioGroup)findViewById(R.id.radio);
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                int id=radioGroup.getCheckedRadioButtonId();
+                RadioButton radioButton=(RadioButton)findViewById(id);
+                if(radioButton.getText().equals("Chef"))
+                    isChef=true;
+                else
+                    isChef=false;
+            }
+        });
         send=(TextView)findViewById(R.id.send_code);
         verify=(TextView)findViewById(R.id.verify_code);
 
@@ -92,6 +109,23 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
             terms_conditions.setTextColor(csl);
         } catch (Exception e) {
         }
+        firebaseAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                String getFullName = fullName.getText().toString();
+                String getEmailId = emailId.getText().toString();
+                String getMobileNumber = mobileNumber.getText().toString();
+                String getLocation = location.getText().toString();
+                User newUser=new User(getEmailId,getFullName,getMobileNumber,getLocation,isChef);
+                User.setUser(newUser);
+                if (user != null) {
+                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+                    mDatabase.child("users").child(user.getUid()).setValue(newUser.toMap());
+                    Toast.makeText(getApplicationContext(),"User Added Successfully",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     // Set Listeners
@@ -141,23 +175,16 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
         String pswd = password.getText().toString().trim();
         progressDialog.setMessage("Please wait...");
         progressDialog.show();
-        String getFullName = fullName.getText().toString();
-        String getEmailId = emailId.getText().toString();
-        String getMobileNumber = mobileNumber.getText().toString();
-        String getLocation = location.getText().toString();
-        String getPassword = password.getText().toString();
-        String getConfirmPassword = confirmPassword.getText().toString();
 
-        HashMap<String, String> dataMap = new HashMap<String, String>();
-        final int[] flag = {0};
     if(Verified) {
         firebaseAuth.createUserWithEmailAndPassword(email, pswd).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 progressDialog.dismiss();
                 if (task.isSuccessful()) {
-                    flag[0] = 1;
+
                     Toast.makeText(Signup.this, "User registered", Toast.LENGTH_SHORT).show();
+
                     finish();
                     startActivity(new Intent(Signup.this, HomeScreen.class));
                 } else {
@@ -170,19 +197,7 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
         code.setError("Verify Code First");
         new CustomToast().Show_Toast(Signup.this, view, "Verify Code First");
     }
-        if (flag[0] == 1){
-            dataMap.put("Name", getFullName);
-            dataMap.put("Emailid", getEmailId);
-            dataMap.put("MobileNumber", getMobileNumber);
-            dataMap.put("Location", getLocation);
-            dataMap.put("Password", getPassword);
-            dataMap.put("ConfirmPassword", getConfirmPassword);
-
-            mDatabase.push().setValue(dataMap);
-        }
     }
-
-    // [END declare_auth]
 
     private boolean Verified = false;
     private PhoneAuthProvider.ForceResendingToken mResendToken;
@@ -201,7 +216,11 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
 
                 progressDialog.dismiss();
                 code.setText(phoneAuthCredential.getSmsCode());
-                signInWithPhoneAuthCredential(phoneAuthCredential);
+                code.setEnabled(false);
+                verify.setText("Verified");
+                verify.setEnabled(false);
+                Verified=true;
+               // signInWithPhoneAuthCredential(phoneAuthCredential);
 
             }
 
@@ -269,6 +288,7 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
                         }
                     }
                 });
+        new MainActivity().signOut();
     }
 
     private boolean validatePhoneNumberAndCode() {
