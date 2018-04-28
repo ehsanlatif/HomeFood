@@ -237,7 +237,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                     Boolean isChef = (Boolean) dataSnapshot.child("isChef").getValue();
                     User newUser = new User(getEmailId, getFullName, getMobileNumber, getLocation, isChef);
                     User.setUser(newUser);
-                    Toast.makeText(getApplicationContext(), User.getUser().toMap().toString(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), User.getUser().toMap().toString(), Toast.LENGTH_SHORT).show();
                     progressDialog.dismiss();
                     finish();
                     startActivity(new Intent(Login.this, HomeScreen.class));
@@ -346,7 +346,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                             User newUser = new User(getEmailId, getFullName, getMobileNumber, getLocation, isChef);
                             User.setUser(newUser);
                             progressDialog.dismiss();
-                            Toast.makeText(getApplicationContext(), User.getUser().toMap().toString(), Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(getApplicationContext(), User.getUser().toMap().toString(), Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(Login.this, HomeScreen.class);
                             startActivity(intent);
                             finish();
@@ -431,7 +431,6 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
             }
             break;
             case R.id.forgetTxt: {
-                finish();
                 startActivity(new Intent(this, Forget_Password.class));
             }
             break;

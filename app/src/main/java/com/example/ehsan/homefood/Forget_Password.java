@@ -35,7 +35,8 @@ public class Forget_Password extends AppCompatActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-onBackPressed();            }
+                onBackPressed();
+            }
         });
         submit.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -1,6 +1,7 @@
 package com.example.ehsan.homefood;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -71,14 +72,12 @@ ImageView signIn;
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(MainActivity.this, Login.class));
-                finish();
             }
         });
         signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(MainActivity.this, Signup.class));
-                finish();
             }
         });
 
@@ -127,7 +126,7 @@ ImageView signIn;
                     Boolean isChef = (Boolean) dataSnapshot.child("isChef").getValue();
                     User newUser = new User(getEmailId, getFullName, getMobileNumber, getLocation, isChef);
                     User.setUser(newUser);
-                    Toast.makeText(getApplicationContext(), User.getUser().toMap().toString(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), User.getUser().toMap().toString(), Toast.LENGTH_SHORT).show();
                     progressDialog.dismiss();
                     finish();
                     startActivity(new Intent(MainActivity.this, HomeScreen.class));
