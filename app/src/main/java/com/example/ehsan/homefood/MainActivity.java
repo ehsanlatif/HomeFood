@@ -23,6 +23,9 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -62,10 +65,15 @@ ImageView signIn;
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
         }
+       // new MyApplication().getInstance().trackScreenView("MainActivity");
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         progressDialog=new ProgressDialog(this);
         updateUI(currentUser);
+        MobileAds.initialize(getApplicationContext(), getString(R.string.google_ad_id));
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
         signIn = (ImageView) findViewById(R.id.signIn);
         signUp = (Button) findViewById(R.id.signUp);
         signIn.setOnClickListener(new View.OnClickListener() {
@@ -94,11 +102,11 @@ ImageView signIn;
             // check if GPS enabled
             if (gps.canGetLocation()) {
 
-                double lat = gps.getLatitude();
-                double longit = gps.getLongitude();
+                latitude = gps.getLatitude();
+                longitude = gps.getLongitude();
 
                 // \n is for new line
-                Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + lat + "\nLong: " + longit, Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
             } else {
                 // can't get location
                 // GPS or Network is not enabled
@@ -110,7 +118,7 @@ ImageView signIn;
         }
     }
 
-    private void updateUI(FirebaseUser user) {
+    private void updateUI(final FirebaseUser user) {
         if (user != null) {
             progressDialog.setCancelable(false);
             progressDialog.setMessage("Loading Credentails...");
@@ -128,8 +136,13 @@ ImageView signIn;
                     User.setUser(newUser);
                     //Toast.makeText(getApplicationContext(), User.getUser().toMap().toString(), Toast.LENGTH_SHORT).show();
                     progressDialog.dismiss();
+                    Intent intent;
+                    if(User.getUser().getChef())
+                        intent= new Intent(MainActivity.this, Chef_Activity.class);
+                    else
+                        intent=new Intent(MainActivity.this,HomeScreen.class);
+                    startActivity(intent);
                     finish();
-                    startActivity(new Intent(MainActivity.this, HomeScreen.class));
                 }
 
                 @Override
@@ -142,6 +155,8 @@ ImageView signIn;
     }
 
     public static void signOut() {
+        User.setUser(null);
+        HomeFoodDB.getAppDatabase(null).dishDao().deleteAll();
         mAuth.signOut();
         LoginManager.getInstance().logOut();
     }

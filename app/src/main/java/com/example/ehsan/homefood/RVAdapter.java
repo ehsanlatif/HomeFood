@@ -1,10 +1,13 @@
 package com.example.ehsan.homefood;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -14,8 +17,9 @@ import java.util.List;
 public class RVAdapter extends RecyclerView.Adapter<RVAdapter.DishViewHolder>{
 
     List<Dish> dishes;
-
-    RVAdapter(List<Dish> dishes){
+    Context c;
+    RVAdapter(Context c,List<Dish> dishes){
+        this.c=c;
         this.dishes = dishes;
     }
     @Override
@@ -28,9 +32,9 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.DishViewHolder>{
     public void onBindViewHolder(DishViewHolder disheViewHolder, int i) {
         disheViewHolder.Dish_Title.setText(dishes.get(i).getTitle());
         disheViewHolder.Area.setText(dishes.get(i).getArea());
-        disheViewHolder.Price.setText(dishes.get(i).getPrice()+"PKR");
-        disheViewHolder.ratingBar.setRating((float)dishes.get(i).getRating());
-        disheViewHolder.Dish_Photo.setImageResource(dishes.get(i).getImg());
+        disheViewHolder.Price.setText("Rs "+dishes.get(i).getPrice()+"/-");
+        disheViewHolder.ratingBar.setRating((float) dishes.get(i).getRating());
+        disheViewHolder.Dish_Photo.setImageBitmap(dishes.get(i).stringToBitmap());
     }
 
     @Override
@@ -42,7 +46,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.DishViewHolder>{
         return dishes.size();
     }
 
-    public static class DishViewHolder extends RecyclerView.ViewHolder {
+    public class DishViewHolder extends RecyclerView.ViewHolder {
         TextView Dish_Title;
         TextView Area;
         TextView Price;
@@ -57,6 +61,21 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.DishViewHolder>{
             Dish_Photo = (ImageView)itemView.findViewById(R.id.dish_img);
             ratingBar=(RatingBar)itemView.findViewById(R.id.ratingBar);
             ratingBar.setMax(5);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int pos=getAdapterPosition();
+                    Dish dish=dishes.get(pos);
+                    Intent intent;
+                    if(User.getUser().getChef()){
+                        intent = new Intent(c, Edit_Dish.class);
+                    }else {
+                         intent = new Intent(c, Dish_Details.class);
+                    }
+                    intent.putExtra("dish", dish);
+                    c.startActivity(intent);
+                }
+            });
         }
     }
 

@@ -323,16 +323,13 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         forgetPwd = (TextView) findViewById(R.id.forgetTxt);
         show_hide_password = (CheckBox) findViewById(R.id.show_hide_password);
         loginLayout = (ConstraintLayout) findViewById(R.id.login_layout);
+        //new MyApplication().getInstance().trackScreenView("Login Screen");
         mAuth = FirebaseAuth.getInstance();
         mAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = mAuth.getCurrentUser();
                 if (user != null) {
-
-                    progressDialog.setCancelable(false);
-                    progressDialog.setMessage("Loading Credentails...");
-                    progressDialog.show();
 
                     DatabaseReference root = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid());
                     root.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -346,8 +343,11 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                             User newUser = new User(getEmailId, getFullName, getMobileNumber, getLocation, isChef);
                             User.setUser(newUser);
                             progressDialog.dismiss();
-                            //Toast.makeText(getApplicationContext(), User.getUser().toMap().toString(), Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(Login.this, HomeScreen.class);
+                            Intent intent;
+                            if(User.getUser().getChef())
+                                 intent= new Intent(Login.this, Chef_Activity.class);
+                            else
+                                intent=new Intent(Login.this,HomeScreen.class);
                             startActivity(intent);
                             finish();
                         }
@@ -496,7 +496,6 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                     }
                 } else {
 
-                    progressDialog.dismiss();
                     Toast.makeText(getApplicationContext(),"Login Successfull",Toast.LENGTH_SHORT).show();
                 }
             }

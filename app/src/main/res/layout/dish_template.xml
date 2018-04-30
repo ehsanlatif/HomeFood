@@ -7,8 +7,8 @@
 
     <ImageView
         android:id="@+id/dish_img"
-        android:layout_width="100dp"
-        android:layout_height="80dp"
+        android:layout_width="80dp"
+        android:layout_height="60dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:scaleType="fitXY"
@@ -19,11 +19,11 @@
     <TextView
         android:id="@+id/dish_title"
         android:layout_width="0dp"
-        android:layout_height="36dp"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="8dp"
         android:text="Chicken Biryani"
-        android:textSize="24sp"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/dish_img"
         app:layout_constraintTop_toTopOf="@+id/dish_img" />
@@ -33,7 +33,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="22-A Faisal Town, Lahore"
-        android:textSize="18sp"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="@+id/dish_title"
         app:layout_constraintStart_toStartOf="@+id/dish_title"
         app:layout_constraintTop_toBottomOf="@+id/dish_title" />
@@ -45,19 +45,19 @@
         android:layout_marginEnd="24dp"
         android:layout_marginTop="8dp"
         android:text="Rs 150/-"
-        android:textSize="18sp"
+        android:textSize="14sp"
         app:layout_constraintEnd_toStartOf="@+id/ratingBar"
         app:layout_constraintStart_toStartOf="@+id/area"
         app:layout_constraintTop_toBottomOf="@+id/area" />
 
     <RatingBar
         android:id="@+id/ratingBar"
-        style="@android:style/Widget.DeviceDefault.Light.RatingBar.Indicator"
+        style="@android:style/Widget.Material.Light.RatingBar.Small"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:numStars="5"
-        android:rating="2.5"
+        android:rating="3.5"
         android:stepSize="0.5"
         app:layout_constraintEnd_toEndOf="@+id/area"
-        app:layout_constraintTop_toBottomOf="@+id/area" />
+        app:layout_constraintTop_toTopOf="@+id/price" />
 </android.support.constraint.ConstraintLayout>

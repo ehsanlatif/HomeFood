@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.XmlResourceParser;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -120,7 +121,6 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
                 User newUser=new User(getEmailId,getFullName,getMobileNumber,getLocation,isChef);
                 User.setUser(newUser);
                 if (user != null) {
-                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
                     mDatabase.child("users").child(user.getUid()).setValue(newUser.toMap());
                     Toast.makeText(getApplicationContext(),"User Added Successfully",Toast.LENGTH_SHORT).show();
                 }
@@ -184,9 +184,13 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
                 if (task.isSuccessful()) {
 
                     Toast.makeText(Signup.this, "User registered", Toast.LENGTH_SHORT).show();
-
+                    Intent intent;
+                    if(User.getUser().getChef())
+                        intent= new Intent(Signup.this, Chef_Activity.class);
+                    else
+                        intent=new Intent(Signup.this,HomeScreen.class);
+                    startActivity(intent);
                     finish();
-                    startActivity(new Intent(Signup.this, HomeScreen.class));
                 } else {
                     Toast.makeText(Signup.this, "Cannot register user", Toast.LENGTH_SHORT).show();
                 }
@@ -218,6 +222,7 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
                 code.setText(phoneAuthCredential.getSmsCode());
                 code.setEnabled(false);
                 verify.setText("Verified");
+                verify.setTextColor(Color.GREEN);
                 verify.setEnabled(false);
                 Verified=true;
                // signInWithPhoneAuthCredential(phoneAuthCredential);

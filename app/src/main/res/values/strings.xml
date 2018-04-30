@@ -31,5 +31,18 @@
     <string name="submit">SUBMIT</string>
     <string name="back">BACK</string>
     <string name="title_activity_home__screen">Home_Screen</string>
+    <string name="make_money">Make money with Firebase Admon</string>
+    <string name="integration">Easy integration, secure money</string>
+    <string name="google_ad_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="title_activity_second">Second Activity</string>
+    <string name="toast_track_exception">Exception is recorded. Check the Crashes and Exceptions on Google Dashboard!</string>
+    <string name="toast_app_crash">The app will crash now! Check the Crashes and Exceptions on Google Dashboard!</string>
+    <string name="fragment_footer">Fragment is loaded! Check the screen view on Google Analytics Dashboard.</string>
+    <string name="msg_instructions">Click on each button to see the appropriate tracking on Google Analytics</string>
+    <string name="btn_second_screen">Second Screen</string>
+    <string name="btn_send_event">Track Event</string>
+    <string name="btn_exception_tracking">Track Exception</string>
+    <string name="btn_app_crash">Track App Crash</string>
+    <string name="btn_load_fragment">Fragment Tracking</string>
 
 </resources>
