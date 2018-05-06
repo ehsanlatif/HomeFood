@@ -23,7 +23,7 @@ public class Dish_Details extends AppCompatActivity {
         img=(ImageView)findViewById(R.id.dish_img);
         cart=(ImageView)findViewById(R.id.cart);
         ratingBar=(RatingBar)findViewById(R.id.ratingBar2);
-        area=(TextView)findViewById(R.id.area);
+        area=(TextView)findViewById(R.id.parcel);
         title=(TextView)findViewById(R.id.title);
         category=(TextView)findViewById(R.id.category);
         price=(TextView)findViewById(R.id.price);
@@ -36,7 +36,9 @@ public class Dish_Details extends AppCompatActivity {
         cart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent=new Intent(Dish_Details.this,Add_to_Cart.class);
+                intent.putExtra("dish",dish);
+                startActivity(intent);
             }
         });
         ratingBar.setRating((float)dish.getRating());

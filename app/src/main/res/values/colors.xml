@@ -4,8 +4,8 @@
     <color name="colorPrimaryDark">#a82d34</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorPrimar">#aaa</color>
-    <color name="colorPrima">#FF807D7D</color>
-    <color name="white">#FFFF</color>
+    <color name="colorPrima">#807d7d</color>
+    <color name="white">#ffffff</color>
     <color name="white_greyish">#eeeeee</color>
     <color name="button_selectorcolor">#9e9e9e</color>
     <color name="red">#a12d2d</color>

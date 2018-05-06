@@ -2,12 +2,10 @@ package com.example.ehsan.homefood;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -56,7 +54,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.DishViewHolder>{
         DishViewHolder(View itemView) {
             super(itemView);
             Dish_Title = (TextView)itemView.findViewById(R.id.dish_title);
-            Area = (TextView)itemView.findViewById(R.id.area);
+            Area = (TextView)itemView.findViewById(R.id.parcel);
             Price = (TextView)itemView.findViewById(R.id.price);
             Dish_Photo = (ImageView)itemView.findViewById(R.id.dish_img);
             ratingBar=(RatingBar)itemView.findViewById(R.id.ratingBar);

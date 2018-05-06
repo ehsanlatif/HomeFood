@@ -7,7 +7,12 @@
     android:background="@color/colorPrimary"
     android:id="@+id/login_layout"
     tools:context="com.example.ehsan.homefood.Login">
-
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <ImageView
         android:id="@+id/close_activity"
         android:layout_width="wrap_content"
@@ -109,7 +114,7 @@
     </android.support.design.widget.TextInputLayout>
 
     <View
-        android:id="@+id/view1"
+        android:id="@+id/view2"
         android:layout_width="0dp"
         android:layout_height="1px"
         android:background="@color/white_greyish"
@@ -128,7 +133,7 @@
         android:textColor="@color/white"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="@+id/password"
-        app:layout_constraintTop_toBottomOf="@+id/view1" />
+        app:layout_constraintTop_toBottomOf="@+id/view2" />
 
 
     <Button
@@ -200,5 +205,6 @@
         app:layout_constraintBottom_toBottomOf="@+id/show_hide_password"
         app:layout_constraintEnd_toEndOf="@+id/password"
         app:layout_constraintTop_toTopOf="@+id/show_hide_password" />
-
+    </android.support.constraint.ConstraintLayout>
+</ScrollView>
 </android.support.constraint.ConstraintLayout>

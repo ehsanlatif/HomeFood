@@ -32,9 +32,9 @@
         android:id="@+id/parcel"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="22-A Faisal Town, Lahore"
+        android:text="Delivery"
+        android:textColor="@android:color/holo_green_dark"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="@+id/dish_title"
         app:layout_constraintStart_toStartOf="@+id/dish_title"
         app:layout_constraintTop_toBottomOf="@+id/dish_title" />
 
@@ -42,22 +42,18 @@
         android:id="@+id/price"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
-        android:layout_marginTop="8dp"
         android:text="Rs 150/-"
         android:textSize="14sp"
-        app:layout_constraintEnd_toStartOf="@+id/ratingBar"
         app:layout_constraintStart_toStartOf="@+id/parcel"
         app:layout_constraintTop_toBottomOf="@+id/parcel" />
 
-    <RatingBar
-        android:id="@+id/ratingBar"
-        style="@android:style/Widget.Material.Light.RatingBar.Small"
+    <TextView
+        android:id="@+id/qty"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:numStars="5"
-        android:rating="3.5"
-        android:stepSize="0.5"
-        app:layout_constraintEnd_toEndOf="@+id/parcel"
-        app:layout_constraintTop_toTopOf="@+id/price" />
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="2 Packs"
+        app:layout_constraintEnd_toEndOf="@+id/dish_title"
+        app:layout_constraintTop_toBottomOf="@+id/dish_title" />
+
 </android.support.constraint.ConstraintLayout>

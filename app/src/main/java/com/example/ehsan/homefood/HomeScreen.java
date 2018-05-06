@@ -51,8 +51,53 @@ public class HomeScreen extends AppCompatActivity {
 //        dishList.add(new Dish("Karachi Biryani","22-B Faisal Town, Lahore",150,R.drawable.biryani,4));
 //        dishList.add(new Dish("Spaggatti","22-B Faisal Town, Lahore",150,R.drawable.index,4.5));
         mAuth=FirebaseAuth.getInstance();
+        progressDialog.setMessage("Loading Dishes...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        DatabaseReference root = firebaseDatabase.getReference().child("dishes");
+        root.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                HomeFoodDB db = HomeFoodDB.getAppDatabase(HomeScreen.this);
+                db.dishDao().deleteAll();
+                for (DataSnapshot dishSnapshot: dataSnapshot.getChildren()) {
+                    int did=Integer.parseInt(dishSnapshot.getKey().toString());
+                    String uploaded_datetime=dishSnapshot.child("uploaded_datetime").getValue().toString();
+                    Timestamp dt=Timestamp.valueOf(uploaded_datetime);
+                    Timestamp currDt=new Timestamp(new Date().getTime());
+                    int daysBW=getDaysBetween(dt,currDt);
+                    if(daysBW==0) {
+                        String title = dishSnapshot.child("title").getValue().toString();
+                        String about_food = dishSnapshot.child("about_food").getValue().toString();
+                        String area = dishSnapshot.child("area").getValue().toString();
+                        int availability_time = Integer.parseInt(dishSnapshot.child("availability_time").getValue().toString());
+                        String category = dishSnapshot.child("category").getValue().toString();
+                        String chef = dishSnapshot.child("chef").getValue().toString();
+                        int charges = Integer.parseInt(dishSnapshot.child("delivery_charged_per_km").getValue().toString());
+                        String img = dishSnapshot.child("img").getValue().toString();
+                        double pickup_lat = Double.parseDouble(dishSnapshot.child("pickup_lat").getValue().toString());
+                        double pickup_long = Double.parseDouble(dishSnapshot.child("pickup_long").getValue().toString());
+                        int price = Integer.parseInt(dishSnapshot.child("price").getValue().toString());
+                        double rating = Double.parseDouble(dishSnapshot.child("rating").getValue().toString());
+                        Dish dish = new Dish(did,title, area, price, img, rating, about_food, "Ready to Serve", category, chef, charges, pickup_lat, pickup_long, availability_time, Timestamp.valueOf(uploaded_datetime));
+                        db.dishDao().insertAll(dish);
 
-        new DishTask().execute();
+                        //Toast.makeText(getApplicationContext(), dish.toMap().toString(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+                progressDialog.dismiss();
+                ViewPager viewPager = (ViewPager) findViewById(R.id.viewPager);
+                PagerAdapter pagerAdapter = new PagerAdapter(getSupportFragmentManager());
+                pagerAdapter.addFragment(new All_Dishes(), "All Dishes");
+                pagerAdapter.addFragment(new Near_You(), "Near You");
+                viewPager.setAdapter(pagerAdapter);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
 
     }
@@ -62,92 +107,14 @@ public class HomeScreen extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDialog.setMessage("Loading Dishes...");
-            progressDialog.setCancelable(false);
-            progressDialog.show();
+
         }
         @Override
         protected String doInBackground(Void... params) {
-            DatabaseReference root = firebaseDatabase.getReference().child("dishes");
-            root.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    HomeFoodDB db = HomeFoodDB.getAppDatabase(HomeScreen.this);
-                    db.dishDao().deleteAll();
-                    for (DataSnapshot dishSnapshot: dataSnapshot.getChildren()) {
-                        int did=Integer.parseInt(dishSnapshot.getKey().toString());
-                        String uploaded_datetime=dishSnapshot.child("uploaded_datetime").getValue().toString();
-                        Timestamp dt=Timestamp.valueOf(uploaded_datetime);
-                        Timestamp currDt=new Timestamp(new Date().getTime());
-                        int daysBW=getDaysBetween(dt,currDt);
-                        if(daysBW==0) {
-                            String title = dishSnapshot.child("title").getValue().toString();
-                            String about_food = dishSnapshot.child("about_food").getValue().toString();
-                            String area = dishSnapshot.child("area").getValue().toString();
-                            int availability_time = Integer.parseInt(dishSnapshot.child("availability_time").getValue().toString());
-                            String category = dishSnapshot.child("category").getValue().toString();
-                            String chef = dishSnapshot.child("chef").getValue().toString();
-                            int charges = Integer.parseInt(dishSnapshot.child("delivery_charged_per_km").getValue().toString());
-                            String img = dishSnapshot.child("img").getValue().toString();
-                            double pickup_lat = Double.parseDouble(dishSnapshot.child("pickup_lat").getValue().toString());
-                            double pickup_long = Double.parseDouble(dishSnapshot.child("pickup_long").getValue().toString());
-                            int price = Integer.parseInt(dishSnapshot.child("price").getValue().toString());
-                            double rating = Double.parseDouble(dishSnapshot.child("rating").getValue().toString());
-                            dish = new Dish(did,title, area, price, img, rating, about_food, "Ready to Serve", category, chef, charges, pickup_lat, pickup_long, availability_time, Timestamp.valueOf(uploaded_datetime));
 
-                            db.dishDao().insertAll(dish);
-                            //Toast.makeText(getApplicationContext(), dish.toMap().toString(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
             return "Done";
         }
-        private int getDaysBetween (Timestamp start, Timestamp end)   {
 
-            boolean negative = false;
-            if (end.before(start))  {
-                negative = true;
-                Timestamp temp = start;
-                start = end;
-                end = temp;
-            }
-
-            GregorianCalendar cal = new GregorianCalendar();
-            cal.setTime(start);
-            cal.set(Calendar.HOUR_OF_DAY, 0);
-            cal.set(Calendar.MINUTE, 0);
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MILLISECOND, 0);
-
-            GregorianCalendar calEnd = new GregorianCalendar();
-            calEnd.setTime(end);
-            calEnd.set(Calendar.HOUR_OF_DAY, 0);
-            calEnd.set(Calendar.MINUTE, 0);
-            calEnd.set(Calendar.SECOND, 0);
-            calEnd.set(Calendar.MILLISECOND, 0);
-
-
-            if (cal.get(Calendar.YEAR) == calEnd.get(Calendar.YEAR))   {
-                if (negative)
-                    return (calEnd.get(Calendar.DAY_OF_YEAR) - cal.get(Calendar.DAY_OF_YEAR)) * -1;
-                return calEnd.get(Calendar.DAY_OF_YEAR) - cal.get(Calendar.DAY_OF_YEAR);
-            }
-
-            int days = 0;
-            while (calEnd.after(cal))    {
-                cal.add (Calendar.DAY_OF_YEAR, 1);
-                days++;
-            }
-            if (negative)
-                return days * -1;
-            return days;
-        }
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
@@ -155,18 +122,52 @@ public class HomeScreen extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             if(result.equals("Done")) {
-                progressDialog.dismiss();
-                ViewPager viewPager = (ViewPager) findViewById(R.id.viewPager);
-                PagerAdapter pagerAdapter = new PagerAdapter(getSupportFragmentManager());
-                pagerAdapter.addFragment(new All_Dishes(), "All Dishes");
-                pagerAdapter.addFragment(new Near_You(), "Near You");
-                viewPager.setAdapter(pagerAdapter);
+
             }
             super.onPostExecute(result);
         }
     }
 
+    private int getDaysBetween (Timestamp start, Timestamp end)   {
 
+        boolean negative = false;
+        if (end.before(start))  {
+            negative = true;
+            Timestamp temp = start;
+            start = end;
+            end = temp;
+        }
+
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setTime(start);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+
+        GregorianCalendar calEnd = new GregorianCalendar();
+        calEnd.setTime(end);
+        calEnd.set(Calendar.HOUR_OF_DAY, 0);
+        calEnd.set(Calendar.MINUTE, 0);
+        calEnd.set(Calendar.SECOND, 0);
+        calEnd.set(Calendar.MILLISECOND, 0);
+
+
+        if (cal.get(Calendar.YEAR) == calEnd.get(Calendar.YEAR))   {
+            if (negative)
+                return (calEnd.get(Calendar.DAY_OF_YEAR) - cal.get(Calendar.DAY_OF_YEAR)) * -1;
+            return calEnd.get(Calendar.DAY_OF_YEAR) - cal.get(Calendar.DAY_OF_YEAR);
+        }
+
+        int days = 0;
+        while (calEnd.after(cal))    {
+            cal.add (Calendar.DAY_OF_YEAR, 1);
+            days++;
+        }
+        if (negative)
+            return days * -1;
+        return days;
+    }
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater=getMenuInflater();
         inflater.inflate(R.menu.menu, menu);

@@ -80,12 +80,14 @@ ImageView signIn;
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(MainActivity.this, Login.class));
+                finish();
             }
         });
         signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(MainActivity.this, Signup.class));
+                finish();
             }
         });
 
@@ -127,17 +129,20 @@ ImageView signIn;
             root.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    String getFullName = dataSnapshot.child("userName").getValue().toString();
-                    String getEmailId = dataSnapshot.child("email").getValue().toString();
-                    String getMobileNumber = dataSnapshot.child("phoneNumber").getValue().toString();
-                    String getLocation = dataSnapshot.child("location").getValue().toString();
-                    Boolean isChef = (Boolean) dataSnapshot.child("isChef").getValue();
-                    User newUser = new User(getEmailId, getFullName, getMobileNumber, getLocation, isChef);
-                    User.setUser(newUser);
+                    if(dataSnapshot.getValue()!=null) {
+                        String getFullName = dataSnapshot.child("userName").getValue().toString();
+                        String getEmailId = dataSnapshot.child("email").getValue().toString();
+                        String getMobileNumber = dataSnapshot.child("phoneNumber").getValue().toString();
+                        String getLocation = dataSnapshot.child("location").getValue().toString();
+                        Boolean isChef = (Boolean) dataSnapshot.child("isChef").getValue();
+                        User newUser = new User(getEmailId, getFullName, getMobileNumber, getLocation, isChef);
+                        User.setUser(newUser);
+                    }
                     //Toast.makeText(getApplicationContext(), User.getUser().toMap().toString(), Toast.LENGTH_SHORT).show();
                     progressDialog.dismiss();
                     Intent intent;
-                    if(User.getUser().getChef())
+
+                    if(User.getUser()!=null && User.getUser().getChef())
                         intent= new Intent(MainActivity.this, Chef_Activity.class);
                     else
                         intent=new Intent(MainActivity.this,HomeScreen.class);

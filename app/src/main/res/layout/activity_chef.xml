@@ -6,6 +6,12 @@
     android:layout_height="match_parent"
     tools:context="com.example.ehsan.homefood.Chef_Activity">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
     <ImageView
         android:id="@+id/imageView3"
         android:layout_width="wrap_content"
@@ -79,5 +85,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/rv"
         app:srcCompat="@android:drawable/ic_menu_add" />
-
+</android.support.constraint.ConstraintLayout>
+    </ScrollView>
 </android.support.constraint.ConstraintLayout>

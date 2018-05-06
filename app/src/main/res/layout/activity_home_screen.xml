@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context="com.example.ehsan.homefood.HomeScreen">
 
+
     <ImageView
         android:id="@+id/imageView3"
         android:layout_width="wrap_content"
@@ -66,4 +67,5 @@
             android:paddingTop="10dp"
             android:textColor="#fff" />
     </view>
+
 </android.support.constraint.ConstraintLayout>

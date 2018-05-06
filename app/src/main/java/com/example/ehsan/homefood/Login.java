@@ -230,17 +230,25 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
             root.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    String getFullName = dataSnapshot.child("userName").getValue().toString();
-                    String getEmailId = dataSnapshot.child("email").getValue().toString();
-                    String getMobileNumber = dataSnapshot.child("phoneNumber").getValue().toString();
-                    String getLocation = dataSnapshot.child("location").getValue().toString();
-                    Boolean isChef = (Boolean) dataSnapshot.child("isChef").getValue();
-                    User newUser = new User(getEmailId, getFullName, getMobileNumber, getLocation, isChef);
-                    User.setUser(newUser);
-                    //Toast.makeText(getApplicationContext(), User.getUser().toMap().toString(), Toast.LENGTH_SHORT).show();
+                    if(dataSnapshot.getValue()!=null) {
+                        String getFullName = dataSnapshot.child("userName").getValue().toString();
+                        String getEmailId = dataSnapshot.child("email").getValue().toString();
+                        String getMobileNumber = dataSnapshot.child("phoneNumber").getValue().toString();
+                        String getLocation = dataSnapshot.child("location").getValue().toString();
+                        Boolean isChef = (Boolean) dataSnapshot.child("isChef").getValue();
+                        User newUser = new User(getEmailId, getFullName, getMobileNumber, getLocation, isChef);
+                        User.setUser(newUser);
+                    }
+//                    Toast.makeText(getApplicationContext(), User.getUser().toMap().toString(), Toast.LENGTH_SHORT).show();
                     progressDialog.dismiss();
+                    Intent intent;
+                    if(User.getUser()!=null &&  User.getUser().getChef())
+                        intent= new Intent(Login.this, Chef_Activity.class);
+                    else
+                        intent=new Intent(Login.this,HomeScreen.class);
+
+                    startActivity(intent);
                     finish();
-                    startActivity(new Intent(Login.this, HomeScreen.class));
                 }
 
                 @Override
@@ -324,43 +332,46 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         show_hide_password = (CheckBox) findViewById(R.id.show_hide_password);
         loginLayout = (ConstraintLayout) findViewById(R.id.login_layout);
         //new MyApplication().getInstance().trackScreenView("Login Screen");
-        mAuth = FirebaseAuth.getInstance();
-        mAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = mAuth.getCurrentUser();
-                if (user != null) {
-
-                    DatabaseReference root = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid());
-                    root.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            String getFullName = dataSnapshot.child("userName").getValue().toString();
-                            String getEmailId = dataSnapshot.child("email").getValue().toString();
-                            String getMobileNumber = dataSnapshot.child("phoneNumber").getValue().toString();
-                            String getLocation = dataSnapshot.child("location").getValue().toString();
-                            Boolean isChef = (Boolean) dataSnapshot.child("isChef").getValue();
-                            User newUser = new User(getEmailId, getFullName, getMobileNumber, getLocation, isChef);
-                            User.setUser(newUser);
-                            progressDialog.dismiss();
-                            Intent intent;
-                            if(User.getUser().getChef())
-                                 intent= new Intent(Login.this, Chef_Activity.class);
-                            else
-                                intent=new Intent(Login.this,HomeScreen.class);
-                            startActivity(intent);
-                            finish();
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
-                }
-
-            }
-        });
+//        mAuth = FirebaseAuth.getInstance();
+//        mAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+//            @Override
+//            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+//                FirebaseUser user = mAuth.getCurrentUser();
+//                if (user != null) {
+//
+//                    DatabaseReference root = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid());
+//                    root.addListenerForSingleValueEvent(new ValueEventListener() {
+//                        @Override
+//                        public void onDataChange(DataSnapshot dataSnapshot) {
+//                            if(dataSnapshot.getValue()!=null) {
+//                                String getFullName = dataSnapshot.child("userName").getValue().toString();
+//                                String getEmailId = dataSnapshot.child("email").getValue().toString();
+//                                String getMobileNumber = dataSnapshot.child("phoneNumber").getValue().toString();
+//                                String getLocation = dataSnapshot.child("location").getValue().toString();
+//                                Boolean isChef = (Boolean) dataSnapshot.child("isChef").getValue();
+//                                User newUser = new User(getEmailId, getFullName, getMobileNumber, getLocation, isChef);
+//                                User.setUser(newUser);
+//                            }
+//                            progressDialog.dismiss();
+//                            Intent intent;
+//                            if(User.getUser()!=null &&  User.getUser().getChef())
+//                                 intent= new Intent(Login.this, Chef_Activity.class);
+//                            else
+//                                intent=new Intent(Login.this,HomeScreen.class);
+//                            finish();
+//                            startActivity(intent);
+//
+//                        }
+//
+//                        @Override
+//                        public void onCancelled(DatabaseError databaseError) {
+//
+//                        }
+//                    });
+//                }
+//
+//            }
+//        });
         // Load ShakeAnimation
         shakeAnimation = AnimationUtils.loadAnimation(this,
                 R.anim.shake);
@@ -496,6 +507,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                     }
                 } else {
 
+
+                    updateUI( FirebaseAuth.getInstance().getCurrentUser());
                     Toast.makeText(getApplicationContext(),"Login Successfull",Toast.LENGTH_SHORT).show();
                 }
             }
